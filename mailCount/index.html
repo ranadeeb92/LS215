@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mail Count</title>
+</head>
+<body>
+  <script src="https://dbdwvr6p7sskw.cloudfront.net/210/files/email_data_v2.js"></script>
+  <script>
+
+    function getDateRange(data) {
+      let dates = [];
+      Object.keys(data).forEach(email => {
+        dates.push(new Date(data[email].Date));
+      });
+      dates.sort((a, b) => a.valueOf() - b.valueOf());
+      return `Date Range: ${dates[0].toDateString()} - ${dates[dates.length-1].toDateString()}`;
+    }
+
+    function extractEmailsDetails(data) {
+      let Details = {};
+      data.forEach((email, index) => {
+         let emailInfo = {};
+        email.split('#/#').forEach(part => {
+          let partInfo = part.replace(/\n/g, '').split(':');
+          if(partInfo[1] === undefined) {
+            emailInfo['body'] = partInfo[0];
+          } else {
+            emailInfo[partInfo[0]] = partInfo[1];
+          }
+        });
+        Details[`email${index + 1}`] = emailInfo;
+      });
+      return Details;
+    }
+
+    function countMail(emailData) {
+      let emailMessages = emailData.split('##||##');
+      let numberOfemails = emailMessages.length;
+
+      let emailsDetails = extractEmailsDetails(emailMessages);
+      let dateRange = getDateRange(emailsDetails);
+      console.log(`Count of Email:${numberOfemails}`);
+      console.log(dateRange);
+    }
+    countMail(emailData);
+  </script>
+</body>
+</html>
+
